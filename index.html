@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Calculator</title>
+</head>
+<body>
+    <h1>Cost Calculator</h1>
+    <label for="numOfPeople">Number of People:</label>
+    <input type="number" id="numOfPeople"><br><br>
+
+    <label for="numOfNights">Number of Nights:</label>
+    <input type="number" id="numOfNights"><br><br>
+
+    <div id="accommodationInputs">
+        <!-- Input fields for accommodation prices -->
+    </div>
+
+    <div id="parkFeesInputs">
+        <!-- Input fields for park fees -->
+    </div>
+
+    <button onclick="addAccommodationInput()">Add Accommodation Price</button>
+    <button onclick="addParkFeesInput()">Add Park Fees</button><br><br>
+
+    <button onclick="calculateTotal()">Calculate Total Cost</button><br><br>
+
+    <div id="result"></div>
+
+    <script>
+        let accommodationPrices = [];
+        let parkFees = [];
+
+        function addAccommodationInput() {
+            let numOfNights = parseInt(document.getElementById("numOfNights").value);
+            let html = '';
+            for (let i = 0; i < numOfNights; i++) {
+                html += `<label for="accommodationPrice${i + 1}">Accommodation Price for Night ${i + 1}:</label>
+                <input type="number" id="accommodationPrice${i + 1}"><br><br>`;
+            }
+            document.getElementById("accommodationInputs").innerHTML = html;
+        }
+
+        function addParkFeesInput() {
+            let numOfNights = parseInt(document.getElementById("numOfNights").value);
+            let html = '';
+            for (let i = 0; i < numOfNights; i++) {
+                html += `<label for="parkFee${i + 1}">Park Fee for Night ${i + 1}:</label>
+                <input type="number" id="parkFee${i + 1}"><br><br>`;
+            }
+            document.getElementById("parkFeesInputs").innerHTML = html;
+        }
+
+        function calculateTotal() {
+            let numOfPeople = parseInt(document.getElementById("numOfPeople").value);
+            let numOfNights = parseInt(document.getElementById("numOfNights").value);
+            let vehicleCost = 205;
+
+            // Get accommodation prices
+            accommodationPrices = [];
+            for (let i = 0; i < numOfNights; i++) {
+                accommodationPrices.push(parseInt(document.getElementById(`accommodationPrice${i + 1}`).value));
+            }
+
+            // Get park fees
+            parkFees = [];
+            for (let i = 0; i < numOfNights; i++) {
+                parkFees.push(parseInt(document.getElementById(`parkFee${i + 1}`).value));
+            }
+
+            let totalAccommodationCost = 0;
+            for (let i = 0; i < accommodationPrices.length; i++) {
+                totalAccommodationCost += calculateAccommodation(accommodationPrices[i], numOfPeople, 1); // assuming same number of nights for all accommodation
+            }
+
+            let totalParkFees = 0;
+            for (let i = 0; i < parkFees.length; i++) {
+                totalParkFees += calculateParkFees(parkFees[i], numOfPeople, 1); // assuming same number of nights for all park fees
+            }
+
+            let totalTransportCost = calculateTransport(vehicleCost, numOfNights+=1);
+
+            let overallTotal = totalAccommodationCost + totalParkFees + totalTransportCost;
+            let profit = 0.1 * overallTotal;
+            let finalCost = overallTotal + profit;
+            let perPersonCost = finalCost / numOfPeople;
+
+            document.getElementById("result").innerHTML = `
+                <p>Total Accommodation Cost: $${totalAccommodationCost}</p>
+                <p>Total Park Fees: $${totalParkFees}</p>
+                <p>Total Transport Cost: $${totalTransportCost}</p>
+                <p>Overall Total: $${overallTotal}</p>
+                <p>Profit (10%): $${profit}</p>
+                <p>Final Cost: $${finalCost}</p>
+                <p>Per Person Cost: $${perPersonCost}</p>
+            `;
+        }
+
+        function calculateAccommodation(pricePerNight, numOfPeople, numOfNights) {
+            return pricePerNight * numOfPeople * numOfNights;
+        }
+
+        function calculateParkFees(pricePerPark, numOfPeople, numOfNights) {
+            return pricePerPark * numOfPeople * numOfNights;
+        }
+
+        function calculateTransport(vehicleCost, numOfNights) {
+            return vehicleCost * numOfNights;
+        }
+    </script>
+</body>
+</html>
